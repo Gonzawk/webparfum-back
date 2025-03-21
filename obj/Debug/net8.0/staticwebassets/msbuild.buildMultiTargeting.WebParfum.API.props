@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\WebParfum.API.props" />
+</Project>

@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "5nWdaw6ATHpuNyzcBdxh4T5xzB7BVxzSsXVgYEQJiQw=",
+  "Source": "WebParfum.API",
+  "BasePath": "_content/WebParfum.API",
+  "Mode": "Default",
+  "ManifestType": "Publish",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
