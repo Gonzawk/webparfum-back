@@ -349,3 +349,10 @@ C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\bin\De
 C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\bin\Debug\net8.0\publish\web.config
+C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\bin\Debug\net8.0\publish\appsettings.Development.json
+C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\bin\Debug\net8.0\publish\appsettings.json
+C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\bin\Debug\net8.0\publish\WebParfum.API.deps.json
+C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\bin\Debug\net8.0\publish\WebParfum.API.runtimeconfig.json
+C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\bin\Debug\net8.0\publish\WebParfum.API.staticwebassets.endpoints.json
+C:\Users\gdp43\source\repos\API.perfumesimportados\api-perfumesimportados\obj\Debug\net8.0\WebParfum.API.sourcelink.json

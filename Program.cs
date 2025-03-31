@@ -20,7 +20,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
-        policy => policy.WithOrigins("http://localhost:3000", "https://webparfum-blush.vercel.app", "https://perfumesadoss.com", "https://www.perfumesadoss.com")
+        policy => policy.WithOrigins("http://192.168.0.126:3000", "https://webparfum-blush.vercel.app", "https://perfumesadoss.com", "https://www.perfumesadoss.com")
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
