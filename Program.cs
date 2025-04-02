@@ -8,6 +8,18 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurar Kestrel para producción: escuchar en todas las IP en el puerto 5000 (HTTP)
+// (Normalmente Nginx se encargará de la terminación TLS)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5000);
+    // Si deseas habilitar HTTPS en Kestrel, descomenta y configura adecuadamente:
+    // options.ListenAnyIP(5001, listenOptions =>
+    // {
+    //     listenOptions.UseHttps();
+    // });
+});
+
 // Configurar DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -16,11 +28,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-// Configurar CORS para permitir solicitudes desde localhost y desde la URL de producción
+// Configurar CORS para producción (se permite únicamente la URL de producción)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
-        policy => policy.WithOrigins("http://192.168.0.126:3000", "https://perfumesadoss.com", "http://localhost:3000")
+        policy => policy.WithOrigins("https://perfumesadoss.com")
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
@@ -36,7 +48,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
+    options.RequireHttpsMetadata = true;
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -48,7 +60,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Agregar controladores y configurar JSON para ignorar ciclos
+// Agregar controladores y configurar JSON para ignorar ciclos de referencia
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
