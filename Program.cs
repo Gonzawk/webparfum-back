@@ -17,11 +17,10 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configurar CORS para permitir solicitudes desde localhost y desde la URL de producción
-// Configurar CORS para desarrollo: permite cualquier origen temporalmente
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
-        policy => policy.WithOrigins("http://192.168.0.126:3000", "https://perfumesadoss.com", "http://localhost:3000")
+        policy => policy.WithOrigins("https://perfumesadoss.com", "http://localhost:3000")
                         .AllowAnyHeader()
                         .AllowAnyMethod());
     options.AddPolicy("AllowAny", policy =>
@@ -72,10 +71,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Habilitar CORS utilizando la política configurada
+// Habilitar CORS utilizando únicamente la política necesaria
 app.UseCors("AllowSpecificOrigins");
-// Habilitar CORS utilizando la política "AllowAny" para desarrollo
-app.UseCors("AllowAny");
+// app.UseCors("AllowAny");  <-- Comentado o eliminado
 
 app.UseAuthentication();
 app.UseAuthorization();
