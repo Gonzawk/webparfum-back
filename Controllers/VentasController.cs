@@ -80,6 +80,7 @@ namespace WebParfum.API.Controllers
                 return StatusCode(500, "Error al procesar la compra: " + ex.Message);
             }
         }
+
         // GET: api/ventas/lista
         [HttpGet("lista")]
         public async Task<IActionResult> GetVentas()
@@ -145,7 +146,6 @@ namespace WebParfum.API.Controllers
                 return StatusCode(500, "Error al obtener ventas: " + ex.Message);
             }
         }
-
 
         // PUT: api/ventas/{ventaId}/confirmar
         [HttpPut("{ventaId}/confirmar")]
@@ -217,6 +217,41 @@ namespace WebParfum.API.Controllers
             }
         }
 
+        // NUEVO MÉTODO: PUT: api/ventas/{ventaId}/cancelar
+        [HttpPut("{ventaId}/cancelar")]
+        public async Task<IActionResult> CancelarVenta(int ventaId, [FromQuery] int adminId)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            string mensaje;
+
+            try
+            {
+                using (var connection = new SqlConnection(connectionString))
+                using (var command = new SqlCommand("sp_CancelarVenta", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@VentaId", ventaId);
+                    command.Parameters.AddWithValue("@AdminId", adminId);
+
+                    var mensajeParam = new SqlParameter("@Mensaje", SqlDbType.NVarChar, 200)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(mensajeParam);
+
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+
+                    mensaje = mensajeParam.Value?.ToString() ?? "No se obtuvo respuesta del SP.";
+                }
+                return Ok(new { Message = mensaje });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error cancelando la venta: " + ex.Message);
+            }
+        }
+
         // GET: api/ventas/asignadas/{adminId}
         [HttpGet("asignadas/{adminId}")]
         public async Task<IActionResult> GetAssignedSales(int adminId)
@@ -253,7 +288,7 @@ namespace WebParfum.API.Controllers
         {
             var admins = await _context.Usuarios
                 .Include(u => u.Roles)
-                .Where(u => u.Roles.Any(r => r.RoleName.ToLower() == "admin" || r.RoleName.ToLower() == "superadmin"))
+                .Where(u => u.Roles.Any(r => r.RoleName.ToLower() == "admin"))
                 .Select(u => new
                 {
                     u.UsuarioId,
@@ -265,9 +300,8 @@ namespace WebParfum.API.Controllers
             return Ok(admins);
         }
 
-        // NUEVO MÉTODO: GET para obtener ventas completas con el nombre del cliente y, en cada detalle, el nombre del producto y la marca.
-        // Se espera que el SP "GetVentasCompleta" retorne una fila por cada venta y detalle, con las siguientes columnas:
-        // VentaId, UsuarioId, ClienteName, AdminId, FechaCompra, Total, Estado, VentaDetalleId, PerfumeId, PerfumeName, Marca, Cantidad, PrecioUnitario, Subtotal.
+
+        // GET: api/ventas/lista-completa
         [HttpGet("lista-completa")]
         public async Task<IActionResult> GetVentasCompletas()
         {

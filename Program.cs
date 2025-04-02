@@ -16,13 +16,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-// Configurar CORS para desarrollo: permite cualquier origen temporalmente
+// Configurar CORS para permitir solicitudes desde localhost y desde la URL de producción
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAny", policy =>
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+    options.AddPolicy("AllowSpecificOrigins",
+        policy => policy.WithOrigins("http://192.168.0.126:3000", "https://perfumesadoss.com", "http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
 });
 
 // Configurar JWT
@@ -67,8 +67,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Habilitar CORS utilizando la política "AllowAny" para desarrollo
-app.UseCors("AllowAny");
+// Habilitar CORS utilizando la política configurada
+app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();

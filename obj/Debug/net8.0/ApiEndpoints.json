@@ -343,6 +343,27 @@
   },
   {
     "ContainingType": "WebParfum.API.Controllers.VentasController",
+    "Method": "CancelarVenta",
+    "RelativePath": "api/Ventas/{ventaId}/cancelar",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ventaId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "adminId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebParfum.API.Controllers.VentasController",
     "Method": "ConfirmSale",
     "RelativePath": "api/Ventas/{ventaId}/confirmar",
     "HttpMethod": "PUT",
