@@ -721,6 +721,18 @@
         }
       }
     },
+    "/api/Ventas/adminsC": {
+      "get": {
+        "tags": [
+          "Ventas"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Ventas/lista-completa": {
       "get": {
         "tags": [

@@ -300,6 +300,24 @@ namespace WebParfum.API.Controllers
             return Ok(admins);
         }
 
+        // GET: api/ventas/adminsC
+        [HttpGet("adminsC")]
+        public async Task<IActionResult> GetAdminsC()
+        {
+            var admins = await _context.Usuarios
+                .Include(u => u.Roles)
+                .Where(u => u.Roles.Any(r => r.RoleName.ToLower() == "admin"))
+                .Select(u => new
+                {
+                    u.UsuarioId,
+                    u.NombreCompleto,
+                    u.Email
+                })
+                .ToListAsync();
+
+            return Ok(admins);
+        }
+
 
         // GET: api/ventas/lista-completa
         [HttpGet("lista-completa")]

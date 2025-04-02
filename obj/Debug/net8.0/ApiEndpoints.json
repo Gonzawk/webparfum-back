@@ -416,6 +416,16 @@
   },
   {
     "ContainingType": "WebParfum.API.Controllers.VentasController",
+    "Method": "GetAdminsC",
+    "RelativePath": "api/Ventas/adminsC",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebParfum.API.Controllers.VentasController",
     "Method": "GetAssignedSales",
     "RelativePath": "api/Ventas/asignadas/{adminId}",
     "HttpMethod": "GET",
