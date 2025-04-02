@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WebParfum.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c88bc8cd17ea354d0177e2ef596d5256cbf50312")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+50f616cace5fc43cfa6e8da38acfe24e1fbac735")]
 [assembly: System.Reflection.AssemblyProductAttribute("WebParfum.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WebParfum.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

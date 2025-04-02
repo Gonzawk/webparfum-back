@@ -8,18 +8,6 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar Kestrel para producción: escuchar en todas las IP en el puerto 5000 (HTTP)
-// (Normalmente Nginx se encargará de la terminación TLS)
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(5000);
-    // Si deseas habilitar HTTPS en Kestrel, descomenta y configura adecuadamente:
-    // options.ListenAnyIP(5001, listenOptions =>
-    // {
-    //     listenOptions.UseHttps();
-    // });
-});
-
 // Configurar DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -28,13 +16,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-// Configurar CORS para producción (se permite únicamente la URL de producción)
+// Configurar CORS para permitir solicitudes desde localhost y desde la URL de producción
+// Configurar CORS para desarrollo: permite cualquier origen temporalmente
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
-        policy => policy.WithOrigins("https://perfumesadoss.com")
+        policy => policy.WithOrigins("http://192.168.0.126:3000", "https://perfumesadoss.com", "http://localhost:3000")
                         .AllowAnyHeader()
                         .AllowAnyMethod());
+    options.AddPolicy("AllowAny", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
 });
 
 // Configurar JWT
@@ -48,7 +41,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = true;
+    options.RequireHttpsMetadata = false;
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -60,7 +53,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Agregar controladores y configurar JSON para ignorar ciclos de referencia
+// Agregar controladores y configurar JSON para ignorar ciclos
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -81,6 +74,8 @@ app.UseHttpsRedirection();
 
 // Habilitar CORS utilizando la política configurada
 app.UseCors("AllowSpecificOrigins");
+// Habilitar CORS utilizando la política "AllowAny" para desarrollo
+app.UseCors("AllowAny");
 
 app.UseAuthentication();
 app.UseAuthorization();
