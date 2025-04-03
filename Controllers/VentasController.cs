@@ -252,6 +252,42 @@ namespace WebParfum.API.Controllers
             }
         }
 
+        // PUT: api/ventas/{ventaId}/eliminar
+        [HttpPut("{ventaId}/eliminar")]
+        public async Task<IActionResult> EliminarVenta(int ventaId)
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            string mensaje;
+
+            try
+            {
+                using (var connection = new SqlConnection(connectionString))
+                using (var command = new SqlCommand("sp_EliminarVenta", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@VentaId", ventaId);
+
+                    var mensajeParam = new SqlParameter("@Mensaje", SqlDbType.NVarChar, 200)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(mensajeParam);
+
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+
+                    mensaje = mensajeParam.Value?.ToString() ?? "No se obtuvo respuesta del SP.";
+                }
+                return Ok(new { Message = mensaje });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error eliminando la venta: " + ex.Message);
+            }
+        }
+
+
+
         // GET: api/ventas/asignadas/{adminId}
         [HttpGet("asignadas/{adminId}")]
         public async Task<IActionResult> GetAssignedSales(int adminId)

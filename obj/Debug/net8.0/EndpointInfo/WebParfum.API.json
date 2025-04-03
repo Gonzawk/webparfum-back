@@ -686,6 +686,29 @@
         }
       }
     },
+    "/api/Ventas/{ventaId}/eliminar": {
+      "put": {
+        "tags": [
+          "Ventas"
+        ],
+        "parameters": [
+          {
+            "name": "ventaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Ventas/asignadas/{adminId}": {
       "get": {
         "tags": [

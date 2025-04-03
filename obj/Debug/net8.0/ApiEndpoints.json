@@ -385,6 +385,22 @@
   },
   {
     "ContainingType": "WebParfum.API.Controllers.VentasController",
+    "Method": "EliminarVenta",
+    "RelativePath": "api/Ventas/{ventaId}/eliminar",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ventaId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebParfum.API.Controllers.VentasController",
     "Method": "FinalizarVenta",
     "RelativePath": "api/Ventas/{ventaId}/finalizar",
     "HttpMethod": "PUT",
