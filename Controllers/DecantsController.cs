@@ -8,81 +8,103 @@ using Microsoft.EntityFrameworkCore;
 using WebParfum.API.Data;
 using WebParfum.API.Models.Decant;
 
-[ApiController]
-[Route("api/[controller]")]
-public class DecantsController : ControllerBase
+namespace WebParfum.API.Controllers
 {
-    private readonly AppDbContext _context;
-    public DecantsController(AppDbContext context) => _context = context;
-
-    // GET all
-    [HttpGet]
-    public async Task<IActionResult> Listar()
+    [ApiController]
+    [Route("api/[controller]")]
+    public class DecantsController : ControllerBase
     {
-        var lista = await _context.Decants
-            .FromSqlRaw("EXEC dbo.usp_ListarDecants")
-            .ToListAsync();
-        return Ok(lista);
-    }
+        private readonly AppDbContext _context;
 
-    // GET by Id
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> Obtener(Guid id)
-    {
-        var p = new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id };
-        var item = await _context.Decants
-            .FromSqlRaw("EXEC dbo.usp_BuscarDecantPorId @Id", p)
-            .FirstOrDefaultAsync();
-        if (item == null) return NotFound();
-        return Ok(item);
-    }
+        public DecantsController(AppDbContext context)
+        {
+            _context = context;
+        }
 
-    // POST
-    [HttpPost]
-    public async Task<IActionResult> Agregar([FromBody] DecantCreateDto dto)
-    {
-        var p1 = new SqlParameter("@Nombre", SqlDbType.NVarChar, 100) { Value = dto.Nombre };
-        var p2 = new SqlParameter("@CodigoQR", SqlDbType.VarChar, 100) { Value = dto.CodigoQR };
-        var p3 = new SqlParameter("@CantidadDisponible", SqlDbType.Int) { Value = dto.CantidadDisponible };
-        var p4 = new SqlParameter("@UrlImagen", SqlDbType.NVarChar, 200) { Value = (object)dto.UrlImagen ?? DBNull.Value };
-        var p5 = new SqlParameter("@Estado", SqlDbType.TinyInt) { Value = dto.Estado };
+        // GET: api/decants
+        [HttpGet]
+        public async Task<IActionResult> Listar()
+        {
+            var lista = await _context.Decants
+                .FromSqlRaw("EXEC dbo.usp_ListarDecants")
+                .ToListAsync();
+            return Ok(lista);
+        }
 
-        await _context.Database.ExecuteSqlRawAsync(
-            "EXEC dbo.usp_AgregarDecant @Nombre, @CodigoQR, @CantidadDisponible, @UrlImagen, @Estado",
-            p1, p2, p3, p4, p5
-        );
-        return NoContent();
-    }
+        // GET: api/decants/{id}
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> Obtener(int id)
+        {
+            var p = new SqlParameter("@Id", SqlDbType.Int) { Value = id };
+            var item = await _context.Decants
+                .FromSqlRaw("EXEC dbo.usp_BuscarDecantPorId @Id", p)
+                .FirstOrDefaultAsync();
+            if (item == null) return NotFound();
+            return Ok(item);
+        }
 
-    // PUT
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Editar(Guid id, [FromBody] DecantUpdateDto dto)
-    {
-        if (id != dto.Id) return BadRequest();
+        // POST: api/decants
+        // Inserta y devuelve el nuevo Id
+        [HttpPost]
+        public async Task<IActionResult> Agregar([FromBody] DecantCreateDto dto)
+        {
+            // Abrimos la conexión ADO.NET
+            var conn = _context.Database.GetDbConnection();
+            await conn.OpenAsync();
 
-        var p0 = new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = dto.Id };
-        var p1 = new SqlParameter("@Nombre", SqlDbType.NVarChar, 100) { Value = dto.Nombre };
-        var p2 = new SqlParameter("@CodigoQR", SqlDbType.VarChar, 100) { Value = dto.CodigoQR };
-        var p3 = new SqlParameter("@CantidadDisponible", SqlDbType.Int) { Value = dto.CantidadDisponible };
-        var p4 = new SqlParameter("@UrlImagen", SqlDbType.NVarChar, 200) { Value = (object)dto.UrlImagen ?? DBNull.Value };
-        var p5 = new SqlParameter("@Estado", SqlDbType.TinyInt) { Value = dto.Estado };
+            using var cmd = conn.CreateCommand();
+            // Ejecutamos el SP y luego leemos el SCOPE_IDENTITY()
+            cmd.CommandText = @"
+                EXEC dbo.usp_AgregarDecant 
+                    @Nombre, @CodigoQR, @CantidadDisponible, @UrlImagen, @Estado;
+                SELECT CAST(SCOPE_IDENTITY() AS INT);
+            ";
+            cmd.CommandType = CommandType.Text;
 
-        await _context.Database.ExecuteSqlRawAsync(
-            "EXEC dbo.usp_EditarDecant @Id, @Nombre, @CodigoQR, @CantidadDisponible, @UrlImagen, @Estado",
-            p0, p1, p2, p3, p4, p5
-        );
-        return NoContent();
-    }
+            cmd.Parameters.Add(new SqlParameter("@Nombre", SqlDbType.NVarChar, 100) { Value = dto.Nombre });
+            // placeholder en servidor; el frontend calculará el URL del QR
+            cmd.Parameters.Add(new SqlParameter("@CodigoQR", SqlDbType.VarChar, 100) { Value = "" });
+            cmd.Parameters.Add(new SqlParameter("@CantidadDisponible", SqlDbType.Int) { Value = dto.CantidadDisponible });
+            cmd.Parameters.Add(new SqlParameter("@UrlImagen", SqlDbType.NVarChar, 200) { Value = (object)dto.UrlImagen ?? DBNull.Value });
+            cmd.Parameters.Add(new SqlParameter("@Estado", SqlDbType.TinyInt) { Value = dto.Estado });
 
-    // DELETE
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Eliminar(Guid id)
-    {
-        var p = new SqlParameter("@Id", SqlDbType.UniqueIdentifier) { Value = id };
-        await _context.Database.ExecuteSqlRawAsync(
-            "EXEC dbo.usp_EliminarDecant @Id",
-            p
-        );
-        return NoContent();
+            var result = await cmd.ExecuteScalarAsync();
+            await conn.CloseAsync();
+
+            if (result == null || !int.TryParse(result.ToString(), out var newId))
+                return StatusCode(500, "No se pudo obtener el ID del nuevo decant.");
+
+            // Devolver 201 Created con la ruta GET /api/decants/{newId}
+            return CreatedAtAction(nameof(Obtener), new { id = newId }, new { id = newId });
+        }
+
+        // PUT: api/decants/{id}
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Editar(int id, [FromBody] DecantUpdateDto dto)
+        {
+            if (id != dto.Id) return BadRequest("El ID de la ruta y del cuerpo no coinciden.");
+
+            await _context.Database.ExecuteSqlRawAsync(
+                "EXEC dbo.usp_EditarDecant @Id, @Nombre, @CodigoQR, @CantidadDisponible, @UrlImagen, @Estado",
+                new SqlParameter("@Id", SqlDbType.Int) { Value = dto.Id },
+                new SqlParameter("@Nombre", SqlDbType.NVarChar, 100) { Value = dto.Nombre },
+                new SqlParameter("@CodigoQR", SqlDbType.VarChar, 100) { Value = dto.CodigoQR },
+                new SqlParameter("@CantidadDisponible", SqlDbType.Int) { Value = dto.CantidadDisponible },
+                new SqlParameter("@UrlImagen", SqlDbType.NVarChar, 200) { Value = (object)dto.UrlImagen ?? DBNull.Value },
+                new SqlParameter("@Estado", SqlDbType.TinyInt) { Value = dto.Estado }
+            );
+            return NoContent();
+        }
+
+        // DELETE: api/decants/{id}
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            await _context.Database.ExecuteSqlRawAsync(
+                "EXEC dbo.usp_EliminarDecant @Id",
+                new SqlParameter("@Id", SqlDbType.Int) { Value = id }
+            );
+            return NoContent();
+        }
     }
 }

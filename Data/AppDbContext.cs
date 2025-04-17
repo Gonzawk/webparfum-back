@@ -144,8 +144,10 @@ namespace WebParfum.API.Data
                 entity.HasKey(e => e.Id);
                 entity.ToTable("Decants");
 
+                entity.HasKey(e => e.Id);
                 entity.Property(e => e.Id)
-                      .HasColumnName("Id");
+                      .HasColumnName("Id")
+                      .ValueGeneratedOnAdd();  // para INT IDENTITY
 
                 entity.Property(e => e.Nombre)
                       .HasColumnName("Nombre")
