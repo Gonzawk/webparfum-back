@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using WebParfum.API.Models;
+using WebParfum.API.Models.Decant;
 using WebParfum.API.Models.Recuperar_clave;
 using WebParfum.API.Models.Ventas;
 
@@ -25,6 +26,8 @@ namespace WebParfum.API.Data
         public virtual DbSet<Venta> Ventas { get; set; }
         public virtual DbSet<VentaDetalle> VentaDetalles { get; set; }
         public virtual DbSet<PasswordResetCode> PasswordResetCodes { get; set; }
+
+        public virtual DbSet<Decant> Decants { get; set; }
 
 
 
@@ -135,6 +138,42 @@ namespace WebParfum.API.Data
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_VentaDetalles_Ventas");
             });
+
+            modelBuilder.Entity<Decant>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.ToTable("Decants");
+
+                entity.Property(e => e.Id)
+                      .HasColumnName("Id");
+
+                entity.Property(e => e.Nombre)
+                      .HasColumnName("Nombre")
+                      .HasMaxLength(100)
+                      .IsRequired();
+
+                entity.Property(e => e.CodigoQR)
+                      .HasColumnName("CodigoQR")
+                      .HasMaxLength(100)
+                      .IsRequired();
+
+                entity.Property(e => e.CantidadDisponible)
+                      .HasColumnName("CantidadDisponible")
+                      .IsRequired();
+
+                entity.Property(e => e.UrlImagen)
+                      .HasColumnName("UrlImagen")
+                      .HasMaxLength(200);
+
+                entity.Property(e => e.Estado)
+                      .HasColumnName("Estado")
+                      .IsRequired();
+
+                entity.Property(e => e.FechaCreacion)
+                      .HasColumnName("FechaCreacion")
+                      .HasDefaultValueSql("SYSDATETIMEOFFSET()");
+            });
+
 
             // Configuración para PasswordResetCode (ya no se usará Fluent API para clave si se tiene [Key])
             modelBuilder.Entity<PasswordResetCode>(entity =>
