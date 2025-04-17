@@ -32,7 +32,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebParfum.API.Controllers.DecantsController",
+    "ContainingType": "DecantsController",
     "Method": "Listar",
     "RelativePath": "api/Decants",
     "HttpMethod": "GET",
@@ -42,7 +42,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebParfum.API.Controllers.DecantsController",
+    "ContainingType": "DecantsController",
     "Method": "Agregar",
     "RelativePath": "api/Decants",
     "HttpMethod": "POST",
@@ -58,7 +58,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebParfum.API.Controllers.DecantsController",
+    "ContainingType": "DecantsController",
     "Method": "Obtener",
     "RelativePath": "api/Decants/{id}",
     "HttpMethod": "GET",
@@ -74,7 +74,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebParfum.API.Controllers.DecantsController",
+    "ContainingType": "DecantsController",
     "Method": "Editar",
     "RelativePath": "api/Decants/{id}",
     "HttpMethod": "PUT",
@@ -95,7 +95,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "WebParfum.API.Controllers.DecantsController",
+    "ContainingType": "DecantsController",
     "Method": "Eliminar",
     "RelativePath": "api/Decants/{id}",
     "HttpMethod": "DELETE",

@@ -1002,13 +1002,13 @@
             "type": "string",
             "nullable": true
           },
-          "urlImagen": {
-            "type": "string",
-            "nullable": true
-          },
           "cantidadDisponible": {
             "type": "integer",
             "format": "int32"
+          },
+          "urlImagen": {
+            "type": "string",
+            "nullable": true
           },
           "estado": {
             "type": "integer",
@@ -1028,7 +1028,7 @@
             "type": "string",
             "nullable": true
           },
-          "urlImagen": {
+          "codigoQR": {
             "type": "string",
             "nullable": true
           },
@@ -1036,13 +1036,13 @@
             "type": "integer",
             "format": "int32"
           },
+          "urlImagen": {
+            "type": "string",
+            "nullable": true
+          },
           "estado": {
             "type": "integer",
             "format": "int32"
-          },
-          "codigoQR": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false

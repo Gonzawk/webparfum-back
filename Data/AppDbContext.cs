@@ -141,40 +141,51 @@ namespace WebParfum.API.Data
 
             modelBuilder.Entity<Decant>(entity =>
             {
+                // Clave primaria
                 entity.HasKey(e => e.Id);
                 entity.ToTable("Decants");
 
-                entity.HasKey(e => e.Id);
+                // Id como INT IDENTITY(1,1)
                 entity.Property(e => e.Id)
-                      .HasColumnName("Id")
-                      .ValueGeneratedOnAdd();  // para INT IDENTITY
+                    .HasColumnName("Id")
+                    .UseIdentityColumn()         // SQL Server IDENTITY
+                    .ValueGeneratedOnAdd();
 
+                // Nombre
                 entity.Property(e => e.Nombre)
-                      .HasColumnName("Nombre")
-                      .HasMaxLength(100)
-                      .IsRequired();
+                    .HasColumnName("Nombre")
+                    .HasMaxLength(100)
+                    .IsRequired();
 
+                // CodigoQR: no null, default NEWID() convertido a VARCHAR(100)
                 entity.Property(e => e.CodigoQR)
-                      .HasColumnName("CodigoQR")
-                      .HasMaxLength(100)
-                      .IsRequired();
+                    .HasColumnName("CodigoQR")
+                    .HasMaxLength(100)
+                    .IsRequired()
+                    .HasDefaultValueSql("CONVERT(VARCHAR(100), NEWID())")
+                    .ValueGeneratedOnAdd();
 
+                // CantidadDisponible
                 entity.Property(e => e.CantidadDisponible)
-                      .HasColumnName("CantidadDisponible")
-                      .IsRequired();
+                    .HasColumnName("CantidadDisponible")
+                    .IsRequired();
 
+                // UrlImagen
                 entity.Property(e => e.UrlImagen)
-                      .HasColumnName("UrlImagen")
-                      .HasMaxLength(200);
+                    .HasColumnName("UrlImagen")
+                    .HasMaxLength(200);
 
+                // Estado
                 entity.Property(e => e.Estado)
-                      .HasColumnName("Estado")
-                      .IsRequired();
+                    .HasColumnName("Estado")
+                    .IsRequired();
 
+                // FechaCreacion con valor por defecto SYSDATETIMEOFFSET()
                 entity.Property(e => e.FechaCreacion)
-                      .HasColumnName("FechaCreacion")
-                      .HasDefaultValueSql("SYSDATETIMEOFFSET()");
+                    .HasColumnName("FechaCreacion")
+                    .HasDefaultValueSql("SYSDATETIMEOFFSET()");
             });
+
 
 
             // Configuración para PasswordResetCode (ya no se usará Fluent API para clave si se tiene [Key])
